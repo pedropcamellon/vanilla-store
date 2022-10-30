@@ -7,8 +7,70 @@
 </head>
 
 <body>
-	<div id="app"></div>
-
+	<!-- navbar -->
+	<nav class="navbar">
+		<span class="navbar__menu">|||</span>
+		<span class="navbar__logo">Vanilla Store</span>
+		<div class="navbar__cart-btn">
+			<span class="cart-icon">
+				Cart
+			</span>
+			<span class="total-cart-items" data-total=0>0</span>
+		</div>
+	</nav>
+	<!-- end of navbar -->
+	<!-- hero -->
+	<header class="hero">
+		<div class="banner">
+			<h1 class="banner__title">Vanilla Store</h1>
+			<button class="banner__btn">Shop Now</button>
+		</div>
+	</header>
+	<!-- end of hero -->
+	<!-- products -->
+	<section class="products">
+		<div class="section__title">
+			<h2>Our Products</h2>
+		</div>
+		<div class="products__list">
+			<!-- single product -->
+			<article class="product">
+				<div class="product__img-container">
+					<img
+					src="./images/product-1.jpeg"
+					class="product__img"
+					>
+					<button type=button class="bag__btn" data-id="1">
+						Shop Now
+					</button>	
+				</div>
+				<h3 class="product__name">Queen Bed</h3>	
+			</article>
+			<!-- end of single product -->
+		</div>
+	</section>
+	<!-- end of products -->
+	<!-- cart -->
+	<div class="cart-overlay">
+		<div class="cart">
+			<span class="close-cart">X</span>
+			<h3 class="cart__title">Cart</h3>
+			<div class="cart__content">
+				<!-- cart item -->
+				<div class="cart-item">
+					<img
+					src="./images/product-1.jpeg"
+					class="cart-item__img"
+					>
+					<h4 class="cart-item__name">Queen Bed</h4>
+					<h5 class="cart-item__price">$ 99.99</h4>
+					<button class="cart-item__remove" type=button>Queen Bed</button>
+				<div>
+				<!-- end of cart item -->
+			<div>
+		<div>	
+	</div>
+	<!-- end of cart -->
 	<script src="src/index.js">
 	</script>
 </body>
