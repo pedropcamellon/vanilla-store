@@ -31,6 +31,11 @@ const product = document.querySelector(".product");
 const productBagBtn = document.querySelector(".product__bag-btn");
 
 /**
+ * Cart
+ */
+let CART = [];
+
+/**
  *
  */
 class Products {
@@ -76,9 +81,23 @@ class UI {
       `;
     });
   }
+
+  /**
+   * @param {int} id
+   */
+  addProdToCart(id) {
+    let prod = Storage.getProduct(id);
+    CART.push({ ...prod, amount: 1 });
+
+    // console.log(`${Storage.getProduct(id).title} was added to cart`);
+    // console.log(`Cart: ${JSON.stringify(CART)}`);
+  }
 }
 
 class Storage {
+  /**
+   * @param {Array} products
+   */
   static saveProducts(products) {
     try {
       localStorage.setItem("products", JSON.stringify(products));
@@ -89,14 +108,35 @@ class Storage {
       );
     }
   }
+
+  /**
+   * Get product given its id
+   * @param {int} id
+   */
+  static getProduct(id) {
+    let products = JSON.parse(localStorage.getItem("products"));
+
+    return products.find((prod) => prod.id === id);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const products = new Products();
   const ui = new UI();
 
-  products.getProducts().then((products) => {
-    ui.displayProducts(products);
-    Storage.saveProducts(products);
-  });
+  products
+    .getProducts()
+    .then((products) => {
+      ui.displayProducts(products);
+      Storage.saveProducts(products);
+    })
+    .then(() => {
+      const buttons = [...document.querySelectorAll(".product__bag-btn")];
+
+      buttons.forEach((btn) => {
+        // Add product to cart when clicking on btn
+        // Reference product id using corresponding custom data attribute
+        btn.addEventListener("click", () => ui.addProdToCart(btn.dataset.id));
+      });
+    });
 });
