@@ -89,6 +89,7 @@ class UI {
     let prod = Storage.getProduct(id);
     CART.push({ ...prod, amount: 1 });
 
+    Storage.saveCart();
     // console.log(`${Storage.getProduct(id).title} was added to cart`);
     // console.log(`Cart: ${JSON.stringify(CART)}`);
   }
@@ -120,6 +121,21 @@ class Storage {
       return products.find((prod) => prod.id === id);
     } catch (err) {
       console.log(`There was an error getting the product: ${err}`);
+    }
+  }
+
+  /**
+   * Save cart to local storage
+   *
+   */
+  static saveCart() {
+    try {
+      localStorage.setItem("cart", JSON.stringify(CART));
+      console.log(`All products in the CART were saved to local storage`);
+    } catch (err) {
+      console.log(
+        `There was an error saving the products in the CART to local storage: ${err}`
+      );
     }
   }
 }
