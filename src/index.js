@@ -29,3 +29,33 @@ const cartContent = document.querySelector(".cart__content");
 const productsList = document.querySelector(".products__list");
 const product = document.querySelector(".product");
 const productBagBtn = document.querySelector(".product__bag-btn");
+
+/**
+ *
+ */
+class Products {
+  async getProducts() {
+    try {
+      // Testing with local data
+      let products = prodsjsonfile.items.map((prod) => {
+        const id = prod.sys.id;
+        const { title, price } = prod.fields;
+        const image = prod.fields.image.fields.file.url;
+
+        return { id, title, price, image };
+      });
+
+      return products;
+    } catch (err) {
+      console.log(`There was an error while getting products: ${err}`);
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const products = new Products();
+
+  products.getProducts().then((products) => {
+    console.log(products);
+  });
+});
