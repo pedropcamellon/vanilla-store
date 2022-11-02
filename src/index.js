@@ -95,17 +95,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const products = new Products();
   const ui = new UI();
 
-  products
-    .getProducts()
-    .then((products) => {
-      ui.displayProducts(products);
-      Storage.saveProducts(products);
-    })
-    .then(() => {
-      const buttons = [...document.querySelectorAll(".product__bag-btn")];
-      buttons.forEach((btn) => {
-        // Reference product id using corresponding custom data attribute
-        btn.addEventListener("click", () => ui.addProdToCart(btn.dataset.id));
-      });
-    });
+  products.getProducts().then((products) => {
+    ui.displayProducts(products);
+    Storage.saveProducts(products);
+  });
 });
