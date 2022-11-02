@@ -52,10 +52,39 @@ class Products {
   }
 }
 
+class UI {
+  /**
+   * Display all the products
+   * @param {Array} products
+   */
+  displayProducts(products) {
+    products.forEach((prod) => {
+      productsList.innerHTML += `
+      <article class="product">
+				<div class="product__img-container">
+					<img
+					src=${prod.image}
+					class="product__img"
+					>
+					<button type=button class="product__bag-btn" data-id=${prod.id}>
+						Shop Now
+					</button>
+				</div>
+				<h3 class="product__name">${prod.title}</h3>
+        <h4 class="product__price">${prod.price}</h4>
+			</article>
+      `;
+    });
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const products = new Products();
+  const ui = new UI();
 
   products.getProducts().then((products) => {
     console.log(products);
+
+    ui.displayProducts(products);
   });
 });
