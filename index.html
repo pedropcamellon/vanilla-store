@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<title>Parcel Sandbox</title>
+	<title>Store</title>
 	<meta charset="UTF-8" />
 </head>
 
@@ -15,7 +15,7 @@
 			<span class="cart-icon">
 				Cart
 			</span>
-			<span class="total-cart-items" data-total=0>0</span>
+			<span class="navbar__total-cart-items" data-total=0>0</span>
 		</div>
 	</nav>
 	<!-- end of navbar -->
@@ -23,7 +23,7 @@
 	<header class="hero">
 		<div class="banner">
 			<h1 class="banner__title">Vanilla Store</h1>
-			<button class="banner__btn">Shop Now</button>
+			<button class="banner__bag-btn">Shop Now</button>
 		</div>
 	</header>
 	<!-- end of hero -->
@@ -34,26 +34,27 @@
 		</div>
 		<div class="products__list">
 			<!-- single product -->
-			<article class="product">
+			<!-- <article class="product">
 				<div class="product__img-container">
 					<img
 					src="./images/product-1.jpeg"
 					class="product__img"
 					>
-					<button type=button class="bag__btn" data-id="1">
+					<button type=button class="product__bag-btn" data-id="1">
 						Shop Now
 					</button>	
 				</div>
 				<h3 class="product__name">Queen Bed</h3>	
-			</article>
+				<h4 class="product__price">$ 99.9</h4>
+			</article> -->
 			<!-- end of single product -->
 		</div>
 	</section>
 	<!-- end of products -->
 	<!-- cart -->
 	<div class="cart-overlay">
-		<div class="cart">
-			<span class="close-cart">X</span>
+		<section class="cart-section">
+			<span class="cart__close-cart-btn">X</span>
 			<h3 class="cart__title">Cart</h3>
 			<div class="cart__content">
 				<!-- cart item -->
@@ -68,7 +69,13 @@
 				<div>
 				<!-- end of cart item -->
 			<div>
-		<div>	
+			<!-- cart footer -->
+			<div class="cart__footer">
+				<h4 class="">Total <span class="cart-total" data-total=0>-</span></h4>
+				<button class="class="clear-cart" type=button>Clear</button>
+			</div>
+			<!-- end of cart footer -->
+		</section>	
 	</div>
 	<!-- end of cart -->
 	<script src="src/index.js">
