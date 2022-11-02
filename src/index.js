@@ -80,9 +80,14 @@ class UI {
 
 class Storage {
   static saveProducts(products) {
-    localStorage.setItem("products", JSON.stringify(products));
-
-    console.log(`All products were saved to local storage`);
+    try {
+      localStorage.setItem("products", JSON.stringify(products));
+      console.log(`All products were saved to local storage`);
+    } catch (err) {
+      console.log(
+        `There was an error saving the products to local storage: ${err}`
+      );
+    }
   }
 }
 
@@ -90,8 +95,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const products = new Products();
   const ui = new UI();
 
-  products.getProducts().then((products) => {
-    ui.displayProducts(products);
-    Storage.saveProducts(products);
-  });
+  products
+    .getProducts()
+    .then((products) => {
+      ui.displayProducts(products);
+      Storage.saveProducts(products);
+    })
+    .then(() => {
+      const buttons = [...document.querySelectorAll(".product__bag-btn")];
+      buttons.forEach((btn) => {
+        // Reference product id using corresponding custom data attribute
+        btn.addEventListener("click", () => ui.addProdToCart(btn.dataset.id));
+      });
+    });
 });
