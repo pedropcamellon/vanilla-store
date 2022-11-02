@@ -114,9 +114,13 @@ class Storage {
    * @param {int} id
    */
   static getProduct(id) {
-    let products = JSON.parse(localStorage.getItem("products"));
+    try {
+      let products = JSON.parse(localStorage.getItem("products"));
 
-    return products.find((prod) => prod.id === id);
+      return products.find((prod) => prod.id === id);
+    } catch (err) {
+      console.log(`There was an error getting the product: ${err}`);
+    }
   }
 }
 
