@@ -106,7 +106,7 @@ class UI {
       const idxInCart = CART.findIndex((p) => p.id === id);
 
       CART[idxInCart].amount += 1;
-      console.log(`${prod.title} in cart: ${CART[idxInCart].amount}`);
+      // console.log(`${prod.title} in cart: ${CART[idxInCart].amount}`);
     } else {
       // Add product to cart
       CART.push({ ...prod, amount: 1 });
@@ -115,8 +115,23 @@ class UI {
     // Save cart to storage
     Storage.saveCart();
 
+    // Set cart total
+    this.setCartTotal();
+
     // console.log(`${Storage.getProduct(id).title} was added to cart`);
     // console.log(`Cart: ${JSON.stringify(CART)}`);
+  }
+
+  setCartTotal() {
+    let tempTotal = 0;
+    let totalProds = 0;
+
+    CART.map((prod) => {
+      tempTotal += prod.amount * prod.price;
+      totalProds += prod.amount;
+    });
+
+    cartTotal.innerHTML = `$ ${tempTotal} in ${totalProds} products`;
   }
 }
 
@@ -159,7 +174,8 @@ class Storage {
   static saveCart() {
     try {
       localStorage.setItem("cart", JSON.stringify(CART));
-      console.log(`All products in the CART were saved to local storage`);
+
+      // console.log(`All products in the CART were saved to local storage`);
     } catch (err) {
       console.log(
         `There was an error saving the products in the CART to local storage: ${err}`
