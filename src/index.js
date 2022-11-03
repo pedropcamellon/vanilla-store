@@ -86,6 +86,32 @@ class UI {
   }
 
   /**
+   * Display last product added to cart
+   * @param {Object} product
+   */
+  addProdToCartUI(prod) {
+    cartContent.innerHTML += `
+      <div class="cart-item" data-id="${prod.id}">
+        <h4 class="cart-item__name">${prod.title}</h4>
+        <h5 class="cart-item__price">$ ${prod.price}</h4>
+        <span class="cart-item-amount">${prod.amount}</span>
+        <button class="cart-item__remove" type=button>X</button>
+      <div>
+      `;
+  };
+
+
+  /**
+    * Update product count shown in cart
+    * @param {int} id
+    * @param {int} amount
+    */
+  updateProdCountInCartUI(id, amount) {
+    cartContent.querySelector(`[data-id="${id}"] > .cart-item-amount`).innerHTML = amount;
+  }
+
+
+  /**
    * Check if a product is already in the cart
    * @param {int} id
    */
@@ -106,10 +132,14 @@ class UI {
       const idxInCart = CART.findIndex((p) => p.id === id);
 
       CART[idxInCart].amount += 1;
+
+      this.updateProdCountInCartUI(id, CART[idxInCart].amount);
       // console.log(`${prod.title} in cart: ${CART[idxInCart].amount}`);
     } else {
       // Add product to cart
-      CART.push({ ...prod, amount: 1 });
+      let newProd = { ...prod, amount: 1 };
+      CART.push(newProd);
+      this.addProdToCartUI(newProd);
     }
 
     // Save cart to storage
@@ -117,6 +147,8 @@ class UI {
 
     // Set cart total
     this.setCartTotal();
+
+    // this.updateCartDisplay();
 
     // console.log(`${Storage.getProduct(id).title} was added to cart`);
     // console.log(`Cart: ${JSON.stringify(CART)}`);
@@ -151,7 +183,7 @@ class Storage {
   static saveProducts(products) {
     try {
       localStorage.setItem("products", JSON.stringify(products));
-      console.log(`All products were saved to local storage`);
+      // console.log(`All products were saved to local storage`);
     } catch (err) {
       console.log(
         `There was an error saving the products to local storage: ${err}`
