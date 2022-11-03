@@ -131,7 +131,12 @@ class UI {
       totalProds += prod.amount;
     });
 
-    cartTotal.innerHTML = `$ ${tempTotal} in ${totalProds} products`;
+    cartTotal.innerHTML = tempTotal;
+    navbarTotalCartItems.innerHTML = totalProds;
+
+    // console.log(
+    //   `$ ${parseFloat(tempTotal.toFixed(2))} in ${totalProds} products`
+    // );
   }
 }
 
