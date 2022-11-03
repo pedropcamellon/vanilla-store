@@ -86,6 +86,26 @@ class UI {
   }
 
   /**
+   * Display last product added to cart
+   * @param {Object} product
+   */
+  updateCartDisplay() {
+    // Clean cart
+    cartContent.innerHTML = ``;
+
+    // Populate cart
+    CART.map((prod) => {
+      cartContent.innerHTML += `
+      <div class="cart-item">
+        <h4 class="cart-item__name">${prod.title}</h4>
+        <h5 class="cart-item__price">$ ${prod.price}</h4>
+        <span class="cart-item-amount">${prod.amount}</span>
+        <button class="cart-item__remove" type=button>X</button>
+      <div>
+      `;
+    });
+  }
+  /**
    * Check if a product is already in the cart
    * @param {int} id
    */
@@ -117,6 +137,8 @@ class UI {
 
     // Set cart total
     this.setCartTotal();
+
+    this.updateCartDisplay();
 
     // console.log(`${Storage.getProduct(id).title} was added to cart`);
     // console.log(`Cart: ${JSON.stringify(CART)}`);
@@ -151,7 +173,7 @@ class Storage {
   static saveProducts(products) {
     try {
       localStorage.setItem("products", JSON.stringify(products));
-      console.log(`All products were saved to local storage`);
+      // console.log(`All products were saved to local storage`);
     } catch (err) {
       console.log(
         `There was an error saving the products to local storage: ${err}`
