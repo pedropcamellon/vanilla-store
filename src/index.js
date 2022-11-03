@@ -86,14 +86,32 @@ class UI {
   }
 
   /**
+   * Check if a product is already in the cart
+   * @param {int} id
+   */
+  isProdInCart(id) {
+    return CART.find((prod) => prod.id === id);
+  }
+
+  /**
    * Add product to cart
    * @param {int} id
    */
   addProdToCart(id) {
     // Get product from products
     let prod = Storage.getProduct(id);
-    // Add product to cart
-    CART.push({ ...prod, amount: 1 });
+
+    // Add more of the same product to the cart
+    if (this.isProdInCart(id)) {
+      const idxInCart = CART.findIndex((p) => p.id === id);
+
+      CART[idxInCart].amount += 1;
+      console.log(`${prod.title} in cart: ${CART[idxInCart].amount}`);
+    } else {
+      // Add product to cart
+      CART.push({ ...prod, amount: 1 });
+    }
+
     // Save cart to storage
     Storage.saveCart();
 
