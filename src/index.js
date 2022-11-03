@@ -57,6 +57,9 @@ class Products {
   }
 }
 
+/**
+ *
+ */
 class UI {
   /**
    * Display all the products
@@ -83,20 +86,28 @@ class UI {
   }
 
   /**
+   * Add product to cart
    * @param {int} id
    */
   addProdToCart(id) {
+    // Get product from products
     let prod = Storage.getProduct(id);
+    // Add product to cart
     CART.push({ ...prod, amount: 1 });
-
+    // Save cart to storage
     Storage.saveCart();
+
     // console.log(`${Storage.getProduct(id).title} was added to cart`);
     // console.log(`Cart: ${JSON.stringify(CART)}`);
   }
 }
 
+/**
+ *
+ */
 class Storage {
   /**
+   * Save products to local storage
    * @param {Array} products
    */
   static saveProducts(products) {
@@ -126,7 +137,6 @@ class Storage {
 
   /**
    * Save cart to local storage
-   *
    */
   static saveCart() {
     try {
