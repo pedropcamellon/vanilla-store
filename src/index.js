@@ -157,29 +157,24 @@ class UI {
         let newProd = { ...prod, amount: 1 };
         CART.push(newProd);
 
-        // console.log(`${JSON.stringify(CART)}`);
-
         this.addProdToCartUI(newProd);
       } else {
-        // // Add more of the same product to the cart
-        // const idxInCart = CART.findIndex((p) => p.id === id);
+        // Add more of the same product to the cart
+        const idxInCart = CART.findIndex((p) => p.id === id);
 
-        // CART[idxInCart].amount += 1;
+        CART[idxInCart].amount += 1;
 
-        // this.updateProdCountInCartUI(id, CART[idxInCart].amount);
-        // console.log(`${prod.title} in cart: ${CART[idxInCart].amount}`);
+        this.updProdCntInCartUI(id, CART[idxInCart].amount);
       }
 
-      // // Save cart to storage
-      // Storage.saveCart();
+      // Save cart to storage
+      Storage.saveCart();
 
-      // // Set cart total
-      // this.setCartTotalUI();
+      // Set cart total
+      this.setCartTotalUI();
     } catch (error) {
       console.log(error);
     }
-    // console.log(`${Storage.getProduct(id).title} was added to cart`);
-    // console.log(`Cart: ${JSON.stringify(CART)}`);
   }
 
   /**
