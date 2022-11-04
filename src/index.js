@@ -20,7 +20,7 @@ const cartSection = document.querySelector(".cart-section");
 const cartOverlay = document.querySelector(".cart-btn");
 const closeCartBtn = document.querySelector(".cart__close-cart-btn");
 const cartBtn = document.querySelector(".navbar__cart-btn");
-const removeCartItem = document.querySelector(".cart-item__remove");
+const removeCartItem = document.querySelector(".cart-item__remove-btn");
 const cartTotal = document.querySelector(".cart-total");
 const clearCart = document.querySelector(".clear-cart");
 const cartContent = document.querySelector(".cart__content");
@@ -148,18 +148,18 @@ class UI {
    */
   addProdToCart(id) {
     try {
-    // Get product from products
-    let prod = Storage.getProduct(id);
+      // Get product from products
+      let prod = Storage.getProduct(id);
 
       // If product is not in cart already ...
       if (!this.isProdInCart(id)) {
-      // Add product to cart
-      let newProd = { ...prod, amount: 1 };
-      CART.push(newProd);
+        // Add product to cart
+        let newProd = { ...prod, amount: 1 };
+        CART.push(newProd);
 
         // console.log(`${JSON.stringify(CART)}`);
 
-      this.addProdToCartUI(newProd);
+        this.addProdToCartUI(newProd);
       } else {
         // // Add more of the same product to the cart
         // const idxInCart = CART.findIndex((p) => p.id === id);
@@ -168,7 +168,7 @@ class UI {
 
         // this.updateProdCountInCartUI(id, CART[idxInCart].amount);
         // console.log(`${prod.title} in cart: ${CART[idxInCart].amount}`);
-    }
+      }
 
       // // Save cart to storage
       // Storage.saveCart();
@@ -182,6 +182,36 @@ class UI {
     // console.log(`Cart: ${JSON.stringify(CART)}`);
   }
 
+  /**
+     * Remove product from cart
+     * @param {int} id
+     */
+  removeProdFromCart(id) {
+    try {
+      // Get product from list of products given its id
+      let prod = Storage.getProduct(id);
+
+      // If product is not in cart do nothing
+      if (!this.isProdInCart(id)) { return; }
+
+      // Look for product index in cart
+      const idxInCart = CART.findIndex((p) => p.id === id);
+
+      // Only splice array when item is found
+      // if (index > -1) {
+      //   CART.splice(idxInCart, 1); // 2nd parameter means remove one item only
+      // }
+
+      // this.updateProdCountInCartUI(id, CART[idxInCart].amount);
+      console.log(`${JSON.stringify(CART[idxInCart])} ${JSON.stringify(CART)}`);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  /**
+   * 
+   */
   setCartTotal() {
     let tempTotal = 0;
     let totalProds = 0;
@@ -228,8 +258,8 @@ class Storage {
       let products = JSON.parse(localStorage.getItem("products"));
 
       return products.find((prod) => prod.id === id);
-    } catch (err) {
-      console.log(`There was an error getting the product: ${err}`);
+    } catch (error) {
+      console.log(`There was an error getting the product: ${error}`);
     }
   }
 
@@ -260,9 +290,9 @@ document.addEventListener("DOMContentLoaded", () => {
       Storage.saveProducts(products);
     })
     .then(() => {
-      const buttons = [...document.querySelectorAll(".product__bag-btn")];
+      const addToCartBtns = [...document.querySelectorAll(".product__bag-btn")];
 
-      buttons.forEach((btn) => {
+      addToCartBtns.forEach((btn) => {
         // Add product to cart when clicking on btn
         // Reference product id using corresponding custom data attribute
         btn.addEventListener("click", () => ui.addProdToCart(btn.dataset.id));
