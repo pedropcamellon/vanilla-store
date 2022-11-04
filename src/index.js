@@ -90,53 +90,56 @@ class UI {
    * @param {Object} product
    */
   addProdToCartUI(prod) {
-    cartContent.innerHTML += `
+    try {
+      // Create a new element for the new item
+      const newCartItem = document.createElement("div");
+
+      // Populate it
+      newCartItem.innerHTML = `
       <div class="cart-item" data-id="${prod.id}">
         <h4 class="cart-item__name">${prod.title}</h4>
         <h5 class="cart-item__price">$ ${prod.price}</h4>
         <span class="cart-item-amount">${prod.amount}</span>
-        <button class="cart-item__remove" type=button>X</button>
+        <button class="cart-item__remove-btn" type=button data-id="${prod.id}">X</button>
       <div>
       `;
+
+      // Add item to cart
+      cartContent.appendChild(newCartItem);
+
+      // Add product to cart when clicking on btn
+      // Reference product id using corresponding custom data attribute
+      document.querySelector(`.cart-item__remove-btn[data-id="${prod.id}"]`)
+        .addEventListener("click", () => this.removeProdFromCart(prod.id));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   /**
     * Update product count shown in cart
     * @param {int} id
-    * @param {int} amount
+    * @param {int} newAmount
     */
-  updateProdCountInCartUI(id, amount) {
+  updateProdCountInCartUI(id, newAmount) {
+    // Replace only the content of the element that holds the product count
     cartContent.querySelector(`[data-id="${id}"] > .cart-item-amount`).innerHTML = amount;
   }
-
-
-  // OLD WAY
-  /**
-   * @param {Object} product
-   */
-  // updateCartDisplay() {
-  //   // Clean cart
-  //   cartContent.innerHTML = ``;
-
-  //   // Populate cart
-  //   CART.map((prod) => {
-  //     cartContent.innerHTML += `
-  //     <div class="cart-item">
-  //       <h4 class="cart-item__name">${prod.title}</h4>
-  //       <h5 class="cart-item__price">$ ${prod.price}</h4>
-  //       <span class="cart-item-amount">${prod.amount}</span>
-  //       <button class="cart-item__remove" type=button>X</button>
-  //     <div>
-  //     `;
-  //   });
-  // }
 
   /**
    * Check if a product is already in the cart
    * @param {int} id
    */
   isProdInCart(id) {
-    return CART.find((prod) => prod.id === id);
+    try {
+      let inCart = CART.find((prod) => prod.id === id);
+      if (!inCart) {
+        console.log(`Product ${id} not found`);
+      }
+      return inCart;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   /**
@@ -144,30 +147,37 @@ class UI {
    * @param {int} id
    */
   addProdToCart(id) {
+    try {
     // Get product from products
     let prod = Storage.getProduct(id);
 
-    // Add more of the same product to the cart
-    if (this.isProdInCart(id)) {
-      const idxInCart = CART.findIndex((p) => p.id === id);
-
-      CART[idxInCart].amount += 1;
-
-      this.updateProdCountInCartUI(id, CART[idxInCart].amount);
-      // console.log(`${prod.title} in cart: ${CART[idxInCart].amount}`);
-    } else {
+      // If product is not in cart already ...
+      if (!this.isProdInCart(id)) {
       // Add product to cart
       let newProd = { ...prod, amount: 1 };
       CART.push(newProd);
+
+        // console.log(`${JSON.stringify(CART)}`);
+
       this.addProdToCartUI(newProd);
+      } else {
+        // // Add more of the same product to the cart
+        // const idxInCart = CART.findIndex((p) => p.id === id);
+
+        // CART[idxInCart].amount += 1;
+
+        // this.updateProdCountInCartUI(id, CART[idxInCart].amount);
+        // console.log(`${prod.title} in cart: ${CART[idxInCart].amount}`);
     }
 
-    // Save cart to storage
-    Storage.saveCart();
+      // // Save cart to storage
+      // Storage.saveCart();
 
-    // Set cart total
-    this.setCartTotal();
-
+      // // Set cart total
+      // this.setCartTotal();
+    } catch (err) {
+      console.log(err);
+    }
     // console.log(`${Storage.getProduct(id).title} was added to cart`);
     // console.log(`Cart: ${JSON.stringify(CART)}`);
   }
