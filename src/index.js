@@ -51,8 +51,8 @@ class Products {
       });
 
       return products;
-    } catch (err) {
-      console.log(`There was an error while getting products: ${err}`);
+    } catch (error) {
+      console.log(`There was an error while getting products: ${error}`);
     }
   }
 }
@@ -174,9 +174,9 @@ class UI {
       // Storage.saveCart();
 
       // // Set cart total
-      // this.setCartTotal();
-    } catch (err) {
-      console.log(err);
+      // this.setCartTotalUI();
+    } catch (error) {
+      console.log(error);
     }
     // console.log(`${Storage.getProduct(id).title} was added to cart`);
     // console.log(`Cart: ${JSON.stringify(CART)}`);
@@ -204,15 +204,15 @@ class UI {
 
       // this.updateProdCountInCartUI(id, CART[idxInCart].amount);
       console.log(`${JSON.stringify(CART[idxInCart])} ${JSON.stringify(CART)}`);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   }
 
   /**
-   * 
+   * Show total amount of prods in cart and total cost
    */
-  setCartTotal() {
+  setCartTotalUI() {
     let tempTotal = 0;
     let totalProds = 0;
 
@@ -242,9 +242,9 @@ class Storage {
     try {
       localStorage.setItem("products", JSON.stringify(products));
       console.log(`All products were saved to local storage`);
-    } catch (err) {
+    } catch (error) {
       console.log(
-        `There was an error saving the products to local storage: ${err}`
+        `There was an error saving the products to local storage: ${error}`
       );
     }
   }
@@ -271,9 +271,9 @@ class Storage {
       localStorage.setItem("cart", JSON.stringify(CART));
 
       // console.log(`All products in the CART were saved to local storage`);
-    } catch (err) {
+    } catch (error) {
       console.log(
-        `There was an error saving the products in the CART to local storage: ${err}`
+        `There was an error saving the products in the CART to local storage: ${error}`
       );
     }
   }
