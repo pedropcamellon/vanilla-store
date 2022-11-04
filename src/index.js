@@ -121,9 +121,9 @@ class UI {
     * @param {int} id
     * @param {int} newAmount
     */
-  updateProdCountInCartUI(id, newAmount) {
+  updProdCntInCartUI(id, newAmount) {
     // Replace only the content of the element that holds the product count
-    cartContent.querySelector(`[data-id="${id}"] > .cart-item-amount`).innerHTML = amount;
+    cartContent.querySelector(`[data-id="${id}"] > .cart-item-amount`).innerHTML = newAmount;
   }
 
   /**
@@ -221,7 +221,7 @@ class UI {
       totalProds += prod.amount;
     });
 
-    cartTotal.innerHTML = tempTotal;
+    cartTotal.innerHTML = tempTotal.toFixed(2);
     navbarTotalCartItems.innerHTML = totalProds;
 
     // console.log(
@@ -279,6 +279,9 @@ class Storage {
   }
 }
 
+/**
+ * When finished loading the DOM ...
+ */
 document.addEventListener("DOMContentLoaded", () => {
   const products = new Products();
   const ui = new UI();
