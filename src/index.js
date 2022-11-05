@@ -1,34 +1,11 @@
 console.clear();
 
 import prodsjsonfile from "./products.json";
-
-// import "./styles.css";
-
-/**
- *  HTML Elements
- */
-// Navbar
-const navbarTotalCartItems = document.querySelector(
-  ".navbar__total-cart-items"
-);
-
-// Header
-const bannerBagBtn = document.querySelector(".banner__cta-btn");
-
-// Cart
-const cartSection = document.querySelector(".cart-section");
-const cartOverlay = document.querySelector(".cart-btn");
-const closeCartBtn = document.querySelector(".cart__close-cart-btn");
-const cartBtn = document.querySelector(".navbar__cart-btn");
-const removeCartItem = document.querySelector(".cart-item__remove-btn");
-const cartTotal = document.querySelector(".cart-total");
-const clearCart = document.querySelector(".clear-cart");
-const cartContent = document.querySelector(".cart__content");
-
-// Products Section
-const productsList = document.querySelector(".products__list");
-const product = document.querySelector(".product");
-const productBagBtn = document.querySelector(".product__bag-btn");
+import {
+  navbarTotalCartItems,
+  cartElements,
+  productElements
+} from "./dom_elements";
 
 /**
  * Cart
@@ -67,7 +44,7 @@ class UI {
    */
   displayProducts(products) {
     products.forEach((prod) => {
-      productsList.innerHTML += `
+      productElements.productsList.innerHTML += `
       <article class="product">
 				<div class="product__img-container">
 					<img
@@ -86,26 +63,72 @@ class UI {
   }
 
   /**
-   * Display last product added to cart
-   * @param {Object} product
+   * Check if a product is already in the cart
+   * @param {int} id
+   */
+  isProdInCart(id) {
+    try {
+      let inCart = CART.find((prod) => prod.id === id);
+
+      // if (!inCart) {
+      //   console.log(`Adding new product with id: ${id}`);
+      // }
+
+      return inCart;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  /**
+    * Update product count shown in cart
+    * @param {int} id
+    * @param {int} newAmount
+    */
+  updProdCntInCartUI(id, newAmount) {
+    cartElements.cartContent.querySelector(`[data-id="${id}"] > .cart-item-amount`).innerHTML = newAmount;
+  }
+
+  /**
+     * Show total amount of prods in cart and total cost
+     */
+  setCartTotalUI() {
+    let tempTotal = 0;
+    let totalProds = 0;
+
+    CART.map((prod) => {
+      tempTotal += prod.amount * prod.price;
+      totalProds += prod.amount;
+    });
+
+    // Display total cost like $ 0.33
+    cartElements.cartTotal.innerHTML = tempTotal.toFixed(2);
+    // Display total products in cart in navbar
+    navbarTotalCartItems.innerHTML = totalProds;
+  }
+
+  /**
+   * Show last product added in DOM
+   * @param {Object} prod
    */
   addProdToCartUI(prod) {
     try {
-      // Create a new element for the new item
+      // Create a new element for the new item like:
+      //  `<div class="cart-item" data-id="8">`
       const newCartItem = document.createElement("div");
+      newCartItem.classList.add("cart-item");
+      newCartItem.setAttribute("data-id", prod.id);
 
       // Populate it
       newCartItem.innerHTML = `
-      <div class="cart-item" data-id="${prod.id}">
         <h4 class="cart-item__name">${prod.title}</h4>
         <h5 class="cart-item__price">$ ${prod.price}</h4>
         <span class="cart-item-amount">${prod.amount}</span>
         <button class="cart-item__remove-btn" type=button data-id="${prod.id}">X</button>
-      <div>
       `;
 
       // Add item to cart
-      cartContent.appendChild(newCartItem);
+      cartElements.cartContent.appendChild(newCartItem);
 
       // Add product to cart when clicking on btn
       // Reference product id using corresponding custom data attribute
@@ -117,34 +140,8 @@ class UI {
   };
 
   /**
-    * Update product count shown in cart
-    * @param {int} id
-    * @param {int} newAmount
-    */
-  updProdCntInCartUI(id, newAmount) {
-    // Replace only the content of the element that holds the product count
-    cartContent.querySelector(`[data-id="${id}"] > .cart-item-amount`).innerHTML = newAmount;
-  }
-
-  /**
-   * Check if a product is already in the cart
-   * @param {int} id
-   */
-  isProdInCart(id) {
-    try {
-      let inCart = CART.find((prod) => prod.id === id);
-      if (!inCart) {
-        console.log(`Product ${id} not found`);
-      }
-      return inCart;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  /**
    * Add product to cart
-   * @param {int} id
+   * @param {int} id Product id
    */
   addProdToCart(id) {
     try {
@@ -157,6 +154,7 @@ class UI {
         let newProd = { ...prod, amount: 1 };
         CART.push(newProd);
 
+        // Show it in DOM
         this.addProdToCartUI(newProd);
       } else {
         // Add more of the same product to the cart
@@ -170,7 +168,26 @@ class UI {
       // Save cart to storage
       Storage.saveCart();
 
-      // Set cart total
+      // Update cart total
+      this.setCartTotalUI();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  /**
+   * Remove product from DOM
+   * @param {int} id Product id
+   */
+  removeProdFromCartUI(id) {
+    try {
+      // Product element to be removed
+      const prodToRemove = cartElements.cartContent.querySelector(`[data-id="${id}"]`);
+
+      // Remove it from DOM
+      cartElements.cartContent.removeChild(prodToRemove);
+
+      // Update total cost
       this.setCartTotalUI();
     } catch (error) {
       console.log(error);
@@ -179,7 +196,7 @@ class UI {
 
   /**
      * Remove product from cart
-     * @param {int} id
+     * @param {int} id Product id
      */
   removeProdFromCart(id) {
     try {
@@ -191,37 +208,18 @@ class UI {
 
       // Look for product index in cart
       const idxInCart = CART.findIndex((p) => p.id === id);
+      const prodCnt = CART[idxInCart].amount;
 
       // Only splice array when item is found
-      // if (index > -1) {
-      //   CART.splice(idxInCart, 1); // 2nd parameter means remove one item only
-      // }
+      if (idxInCart > -1) {
+        CART.splice(idxInCart, 1); // 2nd parameter means remove one item only
+      }
 
-      // this.updateProdCountInCartUI(id, CART[idxInCart].amount);
-      console.log(`${JSON.stringify(CART[idxInCart])} ${JSON.stringify(CART)}`);
+      // Remove product from cart in DOM
+      this.removeProdFromCartUI(id, prodCnt);
     } catch (error) {
       console.log(error);
     }
-  }
-
-  /**
-   * Show total amount of prods in cart and total cost
-   */
-  setCartTotalUI() {
-    let tempTotal = 0;
-    let totalProds = 0;
-
-    CART.map((prod) => {
-      tempTotal += prod.amount * prod.price;
-      totalProds += prod.amount;
-    });
-
-    cartTotal.innerHTML = tempTotal.toFixed(2);
-    navbarTotalCartItems.innerHTML = totalProds;
-
-    // console.log(
-    //   `$ ${parseFloat(tempTotal.toFixed(2))} in ${totalProds} products`
-    // );
   }
 }
 
@@ -231,12 +229,12 @@ class UI {
 class Storage {
   /**
    * Save products to local storage
-   * @param {Array} products
+   * @param {Array} prods
    */
-  static saveProducts(products) {
+  static saveProducts(prods) {
     try {
-      localStorage.setItem("products", JSON.stringify(products));
-      console.log(`All products were saved to local storage`);
+      localStorage.setItem("products", JSON.stringify(prods));
+      // console.log(`All products were saved to local storage`);
     } catch (error) {
       console.log(
         `There was an error saving the products to local storage: ${error}`
@@ -245,7 +243,7 @@ class Storage {
   }
 
   /**
-   * Get product given its id
+   * Get product from local storage given its id
    * @param {int} id
    */
   static getProduct(id) {
@@ -281,18 +279,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const products = new Products();
   const ui = new UI();
 
+  // Get products from server
   products
     .getProducts()
     .then((products) => {
+      // When finished getting products display them
       ui.displayProducts(products);
+      // Save the products to local storage
       Storage.saveProducts(products);
     })
     .then(() => {
+      // When finished displaying products ...
       const addToCartBtns = [...document.querySelectorAll(".product__bag-btn")];
 
+      // Add product to cart when clicking on btn
+      // Reference product id using corresponding custom data attribute
       addToCartBtns.forEach((btn) => {
-        // Add product to cart when clicking on btn
-        // Reference product id using corresponding custom data attribute
         btn.addEventListener("click", () => ui.addProdToCart(btn.dataset.id));
       });
     });
