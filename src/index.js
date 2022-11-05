@@ -105,6 +105,7 @@ class UI {
     cartElements.cartTotal.innerHTML = tempTotal.toFixed(2);
     // Display total products in cart in navbar
     navbarTotalCartItems.innerHTML = totalProds;
+
   }
 
   /**
@@ -195,9 +196,9 @@ class UI {
   }
 
   /**
-     * Remove product from cart
-     * @param {int} id Product id
-     */
+   * Remove product from cart
+   * @param {int} id Product id
+   */
   removeProdFromCart(id) {
     try {
       // Get product from list of products given its id
@@ -216,10 +217,25 @@ class UI {
       }
 
       // Remove product from cart in DOM
-      this.removeProdFromCartUI(id, prodCnt);
+      this.removeProdFromCartUI(id);
     } catch (error) {
       console.log(error);
     }
+  }
+
+  /**
+   * 
+   */
+  clearCart() {
+    // Empty cart
+    CART = [];
+
+    // Clear cart element content
+    cartElements.cartContent.innerHTML = "";
+    
+    cartElements.cartTotal.innerHTML = "0.00";
+    
+    Storage.removeCart();
   }
 }
 
@@ -227,6 +243,20 @@ class UI {
  *
  */
 class Storage {
+  /**
+   * Get product from local storage given its id
+   * @param {int} id
+   */
+   static getProduct(id) {
+    try {
+      let products = JSON.parse(localStorage.getItem("products"));
+
+      return products.find((prod) => prod.id === id);
+    } catch (error) {
+      console.log(`There was an error getting the product: ${error}`);
+    }
+  }
+  
   /**
    * Save products to local storage
    * @param {Array} prods
@@ -239,20 +269,6 @@ class Storage {
       console.log(
         `There was an error saving the products to local storage: ${error}`
       );
-    }
-  }
-
-  /**
-   * Get product from local storage given its id
-   * @param {int} id
-   */
-  static getProduct(id) {
-    try {
-      let products = JSON.parse(localStorage.getItem("products"));
-
-      return products.find((prod) => prod.id === id);
-    } catch (error) {
-      console.log(`There was an error getting the product: ${error}`);
     }
   }
 
@@ -270,6 +286,13 @@ class Storage {
       );
     }
   }
+
+  /**
+   * Remove cart from local storage
+   */
+   static removeCart() {
+    localStorage.removeItem("cart");
+   }
 }
 
 /**
@@ -298,4 +321,6 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.addEventListener("click", () => ui.addProdToCart(btn.dataset.id));
       });
     });
+
+  cartElements.clearCartBtn.addEventListener("click", ui.clearCart);
 });

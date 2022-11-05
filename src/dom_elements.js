@@ -13,8 +13,8 @@ export const cartElements = {
   "closeCartBtn": document.querySelector(".cart__close-cart-btn"),
   "cartBtn": document.querySelector(".navbar__cart-btn"),
   "removeCartItem": document.querySelector(".cart-item__remove-btn"),
-  "cartTotal": document.querySelector(".cart-total"),
-  "clearCart": document.querySelector(".clear-cart"),
+  "cartTotal": document.querySelector(".cart__footer__cart-total"),
+  "clearCartBtn": document.querySelector(".cart__footer__clear-cart-btn"),
   "cartContent": document.querySelector(".cart__content")
 }
 
