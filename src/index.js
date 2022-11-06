@@ -158,7 +158,7 @@ class UI {
         // Show it in DOM
         this.addProdToCartUI(newProd);
       } else {
-        // Add more of the same product to the cart
+        // Add one more product of the same type to the cart
         const idxInCart = CART.findIndex((p) => p.id === id);
 
         CART[idxInCart].amount += 1;
@@ -232,9 +232,9 @@ class UI {
 
     // Clear cart element content
     cartElements.cartContent.innerHTML = "";
-    
+
     cartElements.cartTotal.innerHTML = "0.00";
-    
+
     Storage.removeCart();
   }
 }
@@ -247,7 +247,7 @@ class Storage {
    * Get product from local storage given its id
    * @param {int} id
    */
-   static getProduct(id) {
+  static getProduct(id) {
     try {
       let products = JSON.parse(localStorage.getItem("products"));
 
@@ -256,7 +256,7 @@ class Storage {
       console.log(`There was an error getting the product: ${error}`);
     }
   }
-  
+
   /**
    * Save products to local storage
    * @param {Array} prods
@@ -268,6 +268,25 @@ class Storage {
     } catch (error) {
       console.log(
         `There was an error saving the products to local storage: ${error}`
+      );
+    }
+  }
+
+  /**
+   * Get cart content from local storage
+   */
+  static getCart() {
+    try {
+      // getItem returns a string
+      const str = localStorage.getItem("cart");
+      // if it is not empty parse the str to an json object
+      // else returns an empty array
+      return str ? JSON.parse(str) : [];
+
+      // console.log(`All products in CART were loaded from local storage`);
+    } catch (error) {
+      console.log(
+        `There was an error loading the CART from local storage: ${error}`
       );
     }
   }
@@ -290,9 +309,13 @@ class Storage {
   /**
    * Remove cart from local storage
    */
-   static removeCart() {
-    localStorage.removeItem("cart");
-   }
+  static removeCart() {
+    try {
+      localStorage.removeItem("cart");
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
 /**
@@ -308,8 +331,17 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((products) => {
       // When finished getting products display them
       ui.displayProducts(products);
+
       // Save the products to local storage
       Storage.saveProducts(products);
+
+      // Get cart content from local storage
+      CART = Storage.getCart();
+
+      // Display cart loaded content
+      CART.forEach(prod => {
+        ui.addProdToCartUI(prod);
+      });
     })
     .then(() => {
       // When finished displaying products ...
