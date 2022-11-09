@@ -264,9 +264,49 @@ class Storage {
    * Save products to local storage
    * @param {Array} prods
    */
-  static saveProducts(prods) {
+  static saveProducts(prodData) {
     try {
-      localStorage.setItem("products", JSON.stringify(prods));
+      // Check for browser support
+      if (!('indexedDB' in window)) {
+        console.log("This browser doesn't support IndexedDB");
+        return;
+      }
+
+      const dbName = "products";
+
+      const request = indexedDB.open(dbName, 2);
+
+      request.onerror = (event) => {
+        console.error(`Database error: ${event.target.errorCode}`);
+      };
+
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+
+        // Create an objectStore to hold information about our customers. We're
+        // going to use "ssn" as our key path because it's guaranteed to be
+        // unique - or at least that's what I was told during the kickoff meeting.
+        const objectStore = db.createObjectStore("products", { keyPath: "id" });
+
+        // Create an index to search products by title.
+        // We want to ensure that no two products 
+        // have the same email, so use a unique index.
+        objectStore.createIndex("id", "id", { unique: true });
+
+        // Create an index to search products by id. 
+        objectStore.createIndex("title", "title", { unique: true });
+
+        // Use transaction oncomplete to make sure the objectStore creation is
+        // finished before adding data into it.
+        objectStore.transaction.oncomplete = (event) => {
+          // Store values in the newly created objectStore.
+          const productObjectStore = db.transaction("products", "readwrite").objectStore("products");
+          prodData.forEach((prod) => {
+            productObjectStore.add(prod);
+          });
+        };
+      };
+
       // console.log(`All products were saved to local storage`);
     } catch (error) {
       console.log(
