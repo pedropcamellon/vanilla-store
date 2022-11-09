@@ -81,17 +81,19 @@ class UI {
   }
 
   /**
-    * Update product count shown in cart
-    * @param {int} id
-    * @param {int} newAmount
-    */
+   * Update product count shown in cart
+   * @param {int} id
+   * @param {int} newAmount
+   */
   updProdCntInCartUI(id, newAmount) {
-    cartElements.cartContent.querySelector(`[data-id="${id}"] > .cart-item-amount`).innerHTML = newAmount;
+    cartElements.cartContent.querySelector(
+      `[data-id="${id}"] > .cart-item-amount`
+    ).innerHTML = newAmount;
   }
 
   /**
-     * Show total amount of prods in cart and total cost
-     */
+   * Show total amount of prods in cart and total cost
+   */
   setCartTotalUI() {
     let tempTotal = 0;
     let totalProds = 0;
@@ -105,7 +107,6 @@ class UI {
     cartElements.cartTotal.innerHTML = tempTotal.toFixed(2);
     // Display total products in cart in navbar
     navbarTotalCartItems.innerHTML = totalProds;
-
   }
 
   /**
@@ -133,12 +134,13 @@ class UI {
 
       // Add product to cart when clicking on btn
       // Reference product id using corresponding custom data attribute
-      document.querySelector(`.cart-item__remove-btn[data-id="${prod.id}"]`)
-        .addEventListener("click", () => this.removeProdFromCart(prod.id));
+      document
+        .querySelector(`.cart-item__remove-btn[data-id="${prod.id}"]`)
+        .addEventListener("click", (ev) => this.removeProdFromCart(ev));
     } catch (error) {
       console.log(error);
     }
-  };
+  }
 
   /**
    * Add product to cart
@@ -180,13 +182,13 @@ class UI {
    * Remove product from DOM
    * @param {int} id Product id
    */
-  removeProdFromCartUI(id) {
+  removeProdFromCartUI(btn) {
     try {
       // Product element to be removed
-      const prodToRemove = cartElements.cartContent.querySelector(`[data-id="${id}"]`);
+      const targetEl = btn.parentElement;
 
       // Remove it from DOM
-      cartElements.cartContent.removeChild(prodToRemove);
+      targetEl.parentElement.removeChild(targetEl);
 
       // Update total cost
       this.setCartTotalUI();
@@ -199,32 +201,33 @@ class UI {
    * Remove product from cart
    * @param {int} id Product id
    */
-  removeProdFromCart(id) {
+  removeProdFromCart(ev) {
     try {
-      // Get product from list of products given its id
-      let prod = Storage.getProduct(id);
+      const removeProdBtn = ev.target;
+      const id = removeProdBtn.dataset.id;
 
       // If product is not in cart do nothing
-      if (!this.isProdInCart(id)) { return; }
+      if (!this.isProdInCart(id)) return;
 
       // Look for product index in cart
       const idxInCart = CART.findIndex((p) => p.id === id);
-      const prodCnt = CART[idxInCart].amount;
 
       // Only splice array when item is found
       if (idxInCart > -1) {
         CART.splice(idxInCart, 1); // 2nd parameter means remove one item only
       }
 
+      Storage.saveCart();
+
       // Remove product from cart in DOM
-      this.removeProdFromCartUI(id);
+      this.removeProdFromCartUI(removeProdBtn);
     } catch (error) {
       console.log(error);
     }
   }
 
   /**
-   * 
+   *
    */
   clearCart() {
     // Empty cart
