@@ -342,12 +342,35 @@ document.addEventListener("DOMContentLoaded", () => {
       CART = Storage.getCart();
 
       // Display cart loaded content
-      CART.forEach(prod => {
+      CART.forEach((prod) => {
         ui.addProdToCartUI(prod);
       });
     })
     .then(() => {
       // When finished displaying products ...
+      productElements.productsList.addEventListener("contextmenu", (ev) => {
+        let t = ev.target.parentElement;
+        const optionsMenu = document.createElement("ul");
+        optionsMenu.innerHTML = `<ul><li>Option 1</li><li>Option 2</li></ul>`;
+
+        // Prevent browser from showing default context menu
+        // when right clicking
+        ev.preventDefault();
+
+        if (
+          t.tagName.toLowerCase() !== "article" ||
+          !t.classList.contains("product")
+        )
+          return;
+
+        t.appendChild(optionsMenu);
+
+        setTimeout(() => {
+          t.removeChild(document.querySelector("article > ul"));
+        }, 2000);
+      });
+
+      // Select all "add to cart" btns
       const addToCartBtns = [...document.querySelectorAll(".product__bag-btn")];
 
       // Add product to cart when clicking on btn
