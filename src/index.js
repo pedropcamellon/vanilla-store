@@ -35,7 +35,7 @@ class Cart {
   set products(prods) {
     this.#products = prods;
   }
-
+  
   // Methods
   /**
    * Add product to cart
@@ -61,10 +61,9 @@ class Cart {
         // We look for a product with the same id as the id parameter value 
         // for not getting the product from storage 
         // const idxInCart = this.products.findIndex((p) => p.id === id);
+        this.products[idxInCart].amount += 1;
 
-        console.log(this.products[idxInCart].amount += 1);
-
-        // this.updProdCntInCartUI(id, CART[idxInCart].amount);
+        UI.updProdCntInCart(id, this.products[idxInCart].amount);
       }
 
       // Save cart to storage
@@ -158,12 +157,12 @@ class UI {
   /**
    * Update product count shown in cart
    * @param {int} id
-   * @param {int} newAmount
+   * @param {int} newAmnt
    */
-  updProdCntInCartUI(id, newAmount) {
+  static updProdCntInCart(id, newAmnt) {
     cartElements.cartContent.querySelector(
       `[data-id="${id}"] > .cart-item-amount`
-    ).innerHTML = newAmount;
+    ).innerHTML = newAmnt;
   }
 
   /**
