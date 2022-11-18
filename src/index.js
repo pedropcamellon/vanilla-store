@@ -54,8 +54,7 @@ class Cart {
         this.products = [...this.products, newProd];
 
         // Show it in DOM
-        console.log(`TODO: addProduct. Show it in DOM`);
-        // this.addProdToCartUI(newProd);
+        UI.addProdToCartUI(newProd);
       } else {
         // Add one more product of the same type to the cart
 
@@ -181,7 +180,7 @@ class UI {
    * Show last product added in DOM
    * @param {Object} prod
    */
-  addProdToCartUI(prod) {
+  static addProdToCartUI(prod) {
     try {
       // Create a new element for the new item like:
       //  `<div class="cart-item" data-id="8">`
@@ -194,19 +193,22 @@ class UI {
         <h4 class="cart-item__name">${prod.title}</h4>
         <h5 class="cart-item__price">$ ${prod.price}</h4>
         <span class="cart-item-amount">${prod.amount}</span>
-        <button class="cart-item__remove-btn" type=button data-id="${prod.id}">X</button>
       `;
+
+      // <button class="cart-item__remove-btn" type=button data-id="${prod.id}">X</button>
+
 
       // Add item to cart
       cartElements.cartContent.appendChild(newCartItem);
 
+      // TODO
       // Add product to cart when clicking on btn
       // Reference product id using corresponding custom data attribute
-      document
-        .querySelector(`.cart-item__remove-btn[data-id="${prod.id}"]`)
-        .addEventListener("click", (ev) => this.removeProdFromCart(ev));
+      // document
+      //   .querySelector(`.cart-item__remove-btn[data-id="${prod.id}"]`)
+      //   .addEventListener("click", (ev) => this.removeProdFromCart(ev));
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
