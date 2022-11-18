@@ -8,9 +8,103 @@ import {
 } from "./dom_elements";
 
 /**
- * Cart
+ *  TODO
+ * 
+ *  DB Name
  */
-let CART = [];
+const DB_NAME = "products";
+let DB;
+
+/**
+ * 
+ */
+class Cart {
+  #products;
+
+  constructor(prods = []) {
+    // Initialize products as empty array 
+    this.products = prods;
+  }
+
+  // Getters
+  get products() {
+    return this.#products;
+  }
+
+  // Setters
+  set products(prods) {
+    this.#products = prods;
+  }
+
+  // Methods
+  /**
+   * Add product to cart
+   * @param {int} id Product id
+   */
+  async addProduct(id) {
+    try {
+      const idxInCart = this.prodIdxInCart(id);
+
+      // If product is not in cart already ...
+      if (idxInCart === -1) {
+        // Get product from products
+        const newProd = { ...await Storage.getProduct(id), amount: 1 };
+
+        // Append it to cart list
+        this.products = [...this.products, newProd];
+
+        // Show it in DOM
+        console.log(`TODO: addProduct. Show it in DOM`);
+        // this.addProdToCartUI(newProd);
+      } else {
+        // Add one more product of the same type to the cart
+
+        // We look for a product with the same id as the id parameter value 
+        // for not getting the product from storage 
+        // const idxInCart = this.products.findIndex((p) => p.id === id);
+
+        console.log(this.products[idxInCart].amount += 1);
+
+        // this.updProdCntInCartUI(id, CART[idxInCart].amount);
+      }
+
+      // Save cart to storage
+      // Storage.saveCart();
+
+      // Update cart total
+      // this.setCartTotalUI();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  /**
+   * Check if a product is already in the cart
+   * @param {int} id
+   */
+  prodIdxInCart(id) {
+    try {
+      return this.products.findIndex((p) => p.id === id);
+    } catch (error) {
+      console.log(`prodIdxInCart. ${error}`);
+    }
+  }
+
+  /**
+   * 
+   */
+  updTotals() {
+    let totalCost = 0;
+    let totalProds = 0;
+
+    this.products.map((prod) => {
+      totalCost += prod.amount * prod.price;
+      totalProds += prod.amount;
+    });
+
+    this.totals = { 'cost': totalCost, 'products': totalProds };
+  }
+}
 
 /**
  *
@@ -29,13 +123,13 @@ class Products {
 
       return products;
     } catch (error) {
-      console.log(`There was an error while getting products: ${error}`);
+      console.error(`There was an error getting the product from server. ${error}`);
     }
   }
 }
 
 /**
- *
+ *  UI handling methods
  */
 class UI {
   /**
@@ -63,24 +157,6 @@ class UI {
   }
 
   /**
-   * Check if a product is already in the cart
-   * @param {int} id
-   */
-  isProdInCart(id) {
-    try {
-      let inCart = CART.find((prod) => prod.id === id);
-
-      // if (!inCart) {
-      //   console.log(`Adding new product with id: ${id}`);
-      // }
-
-      return inCart;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  /**
    * Update product count shown in cart
    * @param {int} id
    * @param {int} newAmount
@@ -94,19 +170,11 @@ class UI {
   /**
    * Show total amount of prods in cart and total cost
    */
-  setCartTotalUI() {
-    let tempTotal = 0;
-    let totalProds = 0;
-
-    CART.map((prod) => {
-      tempTotal += prod.amount * prod.price;
-      totalProds += prod.amount;
-    });
-
+  setCartTotalUI(totals) {
     // Display total cost like $ 0.33
-    cartElements.cartTotal.innerHTML = tempTotal.toFixed(2);
+    cartElements.cartTotal.innerHTML = totals.cost.toFixed(2);
     // Display total products in cart in navbar
-    navbarTotalCartItems.innerHTML = totalProds;
+    navbarTotalCartItems.innerHTML = totals.products;
   }
 
   /**
@@ -143,42 +211,6 @@ class UI {
   }
 
   /**
-   * Add product to cart
-   * @param {int} id Product id
-   */
-  addProdToCart(id) {
-    try {
-      // Get product from products
-      let prod = Storage.getProduct(id);
-
-      // If product is not in cart already ...
-      if (!this.isProdInCart(id)) {
-        // Add product to cart
-        let newProd = { ...prod, amount: 1 };
-        CART.push(newProd);
-
-        // Show it in DOM
-        this.addProdToCartUI(newProd);
-      } else {
-        // Add one more product of the same type to the cart
-        const idxInCart = CART.findIndex((p) => p.id === id);
-
-        CART[idxInCart].amount += 1;
-
-        this.updProdCntInCartUI(id, CART[idxInCart].amount);
-      }
-
-      // Save cart to storage
-      Storage.saveCart();
-
-      // Update cart total
-      this.setCartTotalUI();
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  /**
    * Remove product from DOM
    * @param {int} id Product id
    */
@@ -190,8 +222,9 @@ class UI {
       // Remove it from DOM
       targetEl.parentElement.removeChild(targetEl);
 
+      // TODO
       // Update total cost
-      this.setCartTotalUI();
+      // this.setCartTotalUI();
     } catch (error) {
       console.log(error);
     }
@@ -202,34 +235,37 @@ class UI {
    * @param {int} id Product id
    */
   removeProdFromCart(ev) {
-    try {
-      const removeProdBtn = ev.target;
-      const id = removeProdBtn.dataset.id;
+    console.warn('TODO: removeProdFromCart');
+    // try {
+    //   const removeProdBtn = ev.target;
+    //   const id = removeProdBtn.dataset.id;
 
-      // If product is not in cart do nothing
-      if (!this.isProdInCart(id)) return;
+    //   // If product is not in cart do nothing
+    //   if (!this.prodIdxInCart(id)) return;
 
-      // Look for product index in cart
-      const idxInCart = CART.findIndex((p) => p.id === id);
+    //   // Look for product index in cart
+    //   const idxInCart = CART.findIndex((p) => p.id === id);
 
-      // Only splice array when item is found
-      if (idxInCart > -1) {
-        CART.splice(idxInCart, 1); // 2nd parameter means remove one item only
-      }
+    //   // Only splice array when item is found
+    //   if (idxInCart > -1) {
+    //     CART.splice(idxInCart, 1); // 2nd parameter means remove one item only
+    //   }
 
-      Storage.saveCart();
+    //   Storage.saveCart();
 
-      // Remove product from cart in DOM
-      this.removeProdFromCartUI(removeProdBtn);
-    } catch (error) {
-      console.log(error);
-    }
+    //   // Remove product from cart in DOM
+    //   this.removeProdFromCartUI(removeProdBtn);
+    // } catch (error) {
+    //   console.log(error);
+    // }
   }
 
   /**
-   *
+   * 
    */
   clearCart() {
+    console.warn('TODO: clearCart');
+    /*
     // Empty cart
     CART = [];
 
@@ -239,6 +275,7 @@ class UI {
     cartElements.cartTotal.innerHTML = "0.00";
 
     Storage.removeCart();
+    */
   }
 }
 
@@ -251,13 +288,36 @@ class Storage {
    * @param {int} id
    */
   static getProduct(id) {
-    try {
-      let products = JSON.parse(localStorage.getItem("products"));
+    return new Promise((resolve, reject) => {
+        // Check for browser support
+        if (!('indexedDB' in window)) {
+          console.log("This browser doesn't support IndexedDB");
+          return;
+        }
 
-      return products.find((prod) => prod.id === id);
-    } catch (error) {
-      console.log(`There was an error getting the product: ${error}`);
-    }
+        const request = indexedDB.open(DB_NAME, 2);
+
+        request.onerror = (event) => {
+          console.error(`Database error: ${event.target.errorCode}`);
+          reject(`Database error: ${event.target.errorCode}`);
+        };
+
+        request.onsuccess = (event) => {
+          // Do something with request.result!
+          DB = event.target.result;
+
+          // "readonly" transaction
+          DB.transaction([DB_NAME])
+            .objectStore("products")
+            .get(id).onsuccess = (ev) => {
+              // Product
+              resolve(ev.target.result);
+            };
+        };
+
+        // console.error(`
+        // There was an error getting the product from storage. ${error}
+    });
   }
 
   /**
@@ -272,21 +332,25 @@ class Storage {
         return;
       }
 
-      const dbName = "products";
-
-      const request = indexedDB.open(dbName, 2);
+      const request = indexedDB.open(DB_NAME, 2);
 
       request.onerror = (event) => {
         console.error(`Database error: ${event.target.errorCode}`);
       };
 
+      request.onsuccess = (event) => {
+        // const db = event.target.result;
+        DB = event.target.result;
+      }
+
       request.onupgradeneeded = (event) => {
-        const db = event.target.result;
+        // const db = event.target.result;
+        DB = event.target.result;
 
         // Create an objectStore to hold information about our customers. We're
         // going to use "ssn" as our key path because it's guaranteed to be
         // unique - or at least that's what I was told during the kickoff meeting.
-        const objectStore = db.createObjectStore("products", { keyPath: "id" });
+        const objectStore = DB.createObjectStore("products", { keyPath: "id" });
 
         // Create an index to search products by title.
         // We want to ensure that no two products 
@@ -300,17 +364,21 @@ class Storage {
         // finished before adding data into it.
         objectStore.transaction.oncomplete = (event) => {
           // Store values in the newly created objectStore.
-          const productObjectStore = db.transaction("products", "readwrite").objectStore("products");
+          const productObjectStore = DB
+            .transaction("products", "readwrite")
+            .objectStore("products");
+
           prodData.forEach((prod) => {
             productObjectStore.add(prod);
           });
         };
       };
 
-      // console.log(`All products were saved to local storage`);
+      // not shown
+      // console.log(`All products were saved to local storage`, DB);
     } catch (error) {
-      console.log(
-        `There was an error saving the products to local storage: ${error}`
+      console.error(
+        `There was an error saving the products to storage: ${error}`
       );
     }
   }
@@ -328,8 +396,8 @@ class Storage {
 
       // console.log(`All products in CART were loaded from local storage`);
     } catch (error) {
-      console.log(
-        `There was an error loading the CART from local storage: ${error}`
+      console.error(
+        `There was an error loading the CART from storage: ${error}`
       );
     }
   }
@@ -343,8 +411,8 @@ class Storage {
 
       // console.log(`All products in the CART were saved to local storage`);
     } catch (error) {
-      console.log(
-        `There was an error saving the products in the CART to local storage: ${error}`
+      console.error(
+        `There was an error saving the products in CART to storage. ${error}`
       );
     }
   }
@@ -354,7 +422,7 @@ class Storage {
    */
   static removeCart() {
     try {
-      localStorage.removeItem("cart");
+      // 
     } catch (error) {
       console.log(error);
     }
@@ -367,24 +435,27 @@ class Storage {
 document.addEventListener("DOMContentLoaded", () => {
   const products = new Products();
   const ui = new UI();
+  const CART = new Cart();
 
   // Get products from server
   products
     .getProducts()
-    .then((products) => {
+    .then((prods) => {
       // When finished getting products display them
-      ui.displayProducts(products);
+      ui.displayProducts(prods);
 
       // Save the products to local storage
-      Storage.saveProducts(products);
+      Storage.saveProducts(prods);
 
       // Get cart content from local storage
-      CART = Storage.getCart();
+      // CART.products = Storage.getCart();
+
+      // console.log(CART.products);
 
       // Display cart loaded content
-      CART.forEach((prod) => {
-        ui.addProdToCartUI(prod);
-      });
+      // CART.products.forEach((prod) => {
+      //   ui.addProdToCartUI(prod);
+      // });
     })
     .then(() => {
       // When finished displaying products ...
@@ -416,9 +487,9 @@ document.addEventListener("DOMContentLoaded", () => {
       // Add product to cart when clicking on btn
       // Reference product id using corresponding custom data attribute
       addToCartBtns.forEach((btn) => {
-        btn.addEventListener("click", () => ui.addProdToCart(btn.dataset.id));
+        btn.addEventListener("click", () => CART.addProduct(btn.dataset.id));
       });
     });
 
-  cartElements.clearCartBtn.addEventListener("click", ui.clearCart);
+  // cartElements.clearCartBtn.addEventListener("click", ui.clearCart);
 });
