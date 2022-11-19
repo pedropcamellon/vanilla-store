@@ -20,10 +20,14 @@ let DB;
  */
 class Cart {
   #products;
+  #totalCost;
+  #productsCount;
 
   constructor(prods = []) {
     // Initialize products as empty array 
     this.products = prods;
+    this.#totalCost = 0;
+    this.#productsCount = 0;
   }
 
   // Getters
@@ -35,7 +39,7 @@ class Cart {
   set products(prods) {
     this.#products = prods;
   }
-  
+
   // Methods
   /**
    * Add product to cart
@@ -53,6 +57,8 @@ class Cart {
         // Append it to cart list
         this.products = [...this.products, newProd];
 
+        this.addProdToTotals(newProd);
+
         // Show it in DOM
         UI.addProdToCartUI(newProd);
       } else {
@@ -63,6 +69,10 @@ class Cart {
         // const idxInCart = this.products.findIndex((p) => p.id === id);
         this.products[idxInCart].amount += 1;
 
+        // Add again same product to total cost
+        this.addProdToTotals(this.products[idxInCart]);
+
+        // Update the UI / DOM
         UI.updProdCntInCart(id, this.products[idxInCart].amount);
       }
 
@@ -89,18 +99,12 @@ class Cart {
   }
 
   /**
-   * 
+   * Add product cost to total cost
+   * Increase by 1 total products in cart 
    */
-  updTotals() {
-    let totalCost = 0;
-    let totalProds = 0;
-
-    this.products.map((prod) => {
-      totalCost += prod.amount * prod.price;
-      totalProds += prod.amount;
-    });
-
-    this.totals = { 'cost': totalCost, 'products': totalProds };
+   addProdToTotals(prod) {
+    this.#totalCost += prod.price;
+    this.#productsCount += 1;
   }
 }
 
@@ -168,11 +172,16 @@ class UI {
   /**
    * Show total amount of prods in cart and total cost
    */
-  setCartTotalUI(totals) {
+  static setCartTotals(totals) {
     // Display total cost like $ 0.33
-    cartElements.cartTotal.innerHTML = totals.cost.toFixed(2);
+    // cartElements.cartTotal.innerHTML = totals.cost.toFixed(2);
+
+    cartElements.cartTotal.innerHTML = 0;
+
     // Display total products in cart in navbar
-    navbarTotalCartItems.innerHTML = totals.products;
+    // navbarTotalCartItems.innerHTML = totals.products;
+
+    navbarTotalCartItems.innerHTML = 0;
   }
 
   /**
@@ -290,34 +299,34 @@ class Storage {
    */
   static getProduct(id) {
     return new Promise((resolve, reject) => {
-        // Check for browser support
-        if (!('indexedDB' in window)) {
-          console.log("This browser doesn't support IndexedDB");
-          return;
-        }
+      // Check for browser support
+      if (!('indexedDB' in window)) {
+        console.log("This browser doesn't support IndexedDB");
+        return;
+      }
 
-        const request = indexedDB.open(DB_NAME, 2);
+      const request = indexedDB.open(DB_NAME, 2);
 
-        request.onerror = (event) => {
-          console.error(`Database error: ${event.target.errorCode}`);
-          reject(`Database error: ${event.target.errorCode}`);
-        };
+      request.onerror = (event) => {
+        console.error(`Database error: ${event.target.errorCode}`);
+        reject(`Database error: ${event.target.errorCode}`);
+      };
 
-        request.onsuccess = (event) => {
-          // Do something with request.result!
-          DB = event.target.result;
+      request.onsuccess = (event) => {
+        // Do something with request.result!
+        DB = event.target.result;
 
-          // "readonly" transaction
-          DB.transaction([DB_NAME])
-            .objectStore("products")
-            .get(id).onsuccess = (ev) => {
-              // Product
-              resolve(ev.target.result);
-            };
-        };
+        // "readonly" transaction
+        DB.transaction([DB_NAME])
+          .objectStore("products")
+          .get(id).onsuccess = (ev) => {
+            // Product
+            resolve(ev.target.result);
+          };
+      };
 
-        // console.error(`
-        // There was an error getting the product from storage. ${error}
+      // console.error(`
+      // There was an error getting the product from storage. ${error}
     });
   }
 
