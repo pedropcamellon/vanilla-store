@@ -60,7 +60,7 @@ class Cart {
         this.addProdToTotals(newProd);
 
         // Show it in DOM
-        UI.addProdToCartUI(newProd);
+        UI.addProdToCart(newProd);
       } else {
         // Add one more product of the same type to the cart
 
@@ -75,6 +75,12 @@ class Cart {
         // Update the UI / DOM
         UI.updProdCntInCart(id, this.products[idxInCart].amount);
       }
+
+      // Display updated totals
+      UI.setCartTotals({
+        'cost': this.#totalCost,
+        'products': this.#productsCount
+      });
 
       // Save cart to storage
       // Storage.saveCart();
@@ -102,7 +108,7 @@ class Cart {
    * Add product cost to total cost
    * Increase by 1 total products in cart 
    */
-   addProdToTotals(prod) {
+  addProdToTotals(prod) {
     this.#totalCost += prod.price;
     this.#productsCount += 1;
   }
@@ -174,21 +180,17 @@ class UI {
    */
   static setCartTotals(totals) {
     // Display total cost like $ 0.33
-    // cartElements.cartTotal.innerHTML = totals.cost.toFixed(2);
-
-    cartElements.cartTotal.innerHTML = 0;
+    cartElements.cartTotal.innerHTML = totals.cost.toFixed(2);
 
     // Display total products in cart in navbar
-    // navbarTotalCartItems.innerHTML = totals.products;
-
-    navbarTotalCartItems.innerHTML = 0;
+    navbarTotalCartItems.innerHTML = totals.products;
   }
 
   /**
    * Show last product added in DOM
    * @param {Object} prod
    */
-  static addProdToCartUI(prod) {
+  static addProdToCart(prod) {
     try {
       // Create a new element for the new item like:
       //  `<div class="cart-item" data-id="8">`
