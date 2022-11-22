@@ -4,8 +4,7 @@ import prodsjsonfile from "./products.json";
 import {
   navbarTotalCartItems,
   cartElements,
-  productElements,
-  clearCartBtn
+  productElements
 } from "./dom_elements";
 
 /**
@@ -84,7 +83,7 @@ class Cart {
       });
 
       // Save cart to storage
-      // Storage.saveCart();
+      Storage.saveCart(this.products);
 
       // Update cart total
       // this.setCartTotalUI();
@@ -115,13 +114,17 @@ class Cart {
   }
 
   clearCart() {
-    this.products = [];
-    this.#totalCost = 0;
-    this.#productsCount = 0;
+    try {
+      this.products = [];
+      this.#totalCost = 0;
+      this.#productsCount = 0;
 
-    UI.clearCart();
+      UI.clearCart();
 
-    // Storage.removeCart();
+      Storage.removeCart();
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 
@@ -287,11 +290,38 @@ class UI {
    * 
    */
   static clearCart() {
-    // Clear cart element content
-    cartElements.cartContent.innerHTML = "";
-    
-    // Reset total cost of items in cart 
-    cartElements.cartTotal.innerHTML = "0.00";  
+    try {
+      // Clear cart element content
+      cartElements.cartContent.innerHTML = "";
+
+      // Reset total cost of items in cart 
+      cartElements.cartTotal.innerHTML = "0.00";
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
+  static showContextMenu(ev) {
+    let t = ev.target.parentElement;
+    const optionsMenu = document.createElement("ul");
+    optionsMenu.innerHTML = `<ul><li>Option 1</li><li>Option 2</li></ul>`;
+
+    // Prevent browser from showing default context menu
+    // when right clicking
+    ev.preventDefault();
+
+    if (
+      t.tagName.toLowerCase() !== "article" ||
+      !t.classList.contains("product")
+    )
+      return;
+
+    t.appendChild(optionsMenu);
+
+    setTimeout(() => {
+      t.removeChild(document.querySelector("article > ul"));
+    }, 2000);
   }
 }
 
@@ -421,9 +451,9 @@ class Storage {
   /**
    * Save cart to local storage
    */
-  static saveCart() {
+  static saveCart(products) {
     try {
-      localStorage.setItem("cart", JSON.stringify(CART));
+      localStorage.setItem("cart", JSON.stringify(products));
 
       // console.log(`All products in the CART were saved to local storage`);
     } catch (error) {
@@ -451,7 +481,9 @@ class Storage {
 document.addEventListener("DOMContentLoaded", () => {
   const products = new Products();
   const ui = new UI();
-  const CART = new Cart();
+
+  // Get cart content from local storage
+  const CART = new Cart(Storage.getCart());
 
   // Get products from server
   products
@@ -463,11 +495,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // Save the products to local storage
       Storage.saveProducts(prods);
 
-      // Get cart content from local storage
-      // CART.products = Storage.getCart();
-
-      // console.log(CART.products);
-
       // Display cart loaded content
       // CART.products.forEach((prod) => {
       //   ui.addProdToCartUI(prod);
@@ -475,27 +502,8 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then(() => {
       // When finished displaying products ...
-      productElements.productsList.addEventListener("contextmenu", (ev) => {
-        let t = ev.target.parentElement;
-        const optionsMenu = document.createElement("ul");
-        optionsMenu.innerHTML = `<ul><li>Option 1</li><li>Option 2</li></ul>`;
-
-        // Prevent browser from showing default context menu
-        // when right clicking
-        ev.preventDefault();
-
-        if (
-          t.tagName.toLowerCase() !== "article" ||
-          !t.classList.contains("product")
-        )
-          return;
-
-        t.appendChild(optionsMenu);
-
-        setTimeout(() => {
-          t.removeChild(document.querySelector("article > ul"));
-        }, 2000);
-      });
+      productElements.productsList.addEventListener("contextmenu",
+        (ev) => UI.showContextMenu(ev));
 
       // Select all "add to cart" btns
       const addToCartBtns = [...document.querySelectorAll(".product__bag-btn")];
