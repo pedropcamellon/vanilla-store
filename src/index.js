@@ -4,7 +4,8 @@ import prodsjsonfile from "./products.json";
 import {
   navbarTotalCartItems,
   cartElements,
-  productElements
+  productElements,
+  clearCartBtn
 } from "./dom_elements";
 
 /**
@@ -111,6 +112,16 @@ class Cart {
   addProdToTotals(prod) {
     this.#totalCost += prod.price;
     this.#productsCount += 1;
+  }
+
+  clearCart() {
+    this.products = [];
+    this.#totalCost = 0;
+    this.#productsCount = 0;
+
+    UI.clearCart();
+
+    // Storage.removeCart();
   }
 }
 
@@ -275,19 +286,12 @@ class UI {
   /**
    * 
    */
-  clearCart() {
-    console.warn('TODO: clearCart');
-    /*
-    // Empty cart
-    CART = [];
-
+  static clearCart() {
     // Clear cart element content
     cartElements.cartContent.innerHTML = "";
-
-    cartElements.cartTotal.innerHTML = "0.00";
-
-    Storage.removeCart();
-    */
+    
+    // Reset total cost of items in cart 
+    cartElements.cartTotal.innerHTML = "0.00";  
   }
 }
 
@@ -503,5 +507,5 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-  // cartElements.clearCartBtn.addEventListener("click", ui.clearCart);
+  cartElements.clearCartBtn.addEventListener("click", () => CART.clearCart());
 });
