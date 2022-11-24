@@ -465,12 +465,13 @@ class Storage {
 
   /**
    * Remove cart from local storage
+   * 
    */
   static removeCart() {
     try {
-      // 
+      localStorage.removeItem('cart');
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 }
